@@ -19,9 +19,6 @@ def slave_id(a):
   print("Invalid Input. Try again: ")
   slave_id(a)
  return x
-
-# def setting(c):
-
  
 b=slave_id(1)
 
@@ -54,17 +51,17 @@ set2= input('Enter 2nd Setting 1 or 2: ')
 if set2==1:
  time.sleep(0.5)
  x1smb  =  smb.read_registers(3,8,3)
- print(x1smb)
+ print('x1smb: '),x1smb
  time.sleep(0.5)
  y1smb  =  meter.read_registers(3,8,3)
- print(y1smb)
+ print('y1smb: '),y1smb
 if set2==2:
  time.sleep(0.5)
  x2smb  =  smb.read_registers(11,8,3)
- print(x2smb)
+ print('x2smb: '),x2smb
  time.sleep(0.5)
  y2smb  =  meter.read_registers(3,8,3)
- print(y2smb)
+ print('y2smb: '),y2smb
 
 xsmb = x1smb + x2smb
 ysmb = y1smb + y2smb

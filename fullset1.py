@@ -33,6 +33,7 @@ raw_input("Keep setting A and current 3A and PRESS ENTER")
 time.sleep(1)
 x11smb  = smb.read_registers(3,8,3)
 y11smb  = meter.read_registers(3,8,3)
+
 print ("x11smb"),x11smb
 print ("y11smb"),y11smb
 time.sleep(1)
@@ -72,14 +73,13 @@ print ("x23smb"),x23smb
 print ("y23smb"),y23smb
 time.sleep(1)
 
+#merge data of setting A and B as per current setting
 x1smb = x11smb + x21smb
 x2smb = x12smb + x22smb
 x3smb = x13smb + x23smb
-
 y1smb = y11smb + y21smb
 y2smb = y12smb + y22smb
 y3smb = y13smb + y23smb
-
 print("Reading at 3A"),x1smb
 print("Meter at 3A"),y1smb
 print("Reading at 15A"),x2smb
@@ -87,6 +87,8 @@ print("Meter at 15A"),y2smb
 print("Reading at 30A"),x3smb
 print("Meter at 30A"),y3smb
 
+
+#Sort data as per channel
 xs1 = (x1smb[0],x2smb[0],x3smb[0])
 print("Reading for Channel 1"),xs1
 ys1 = (y1smb[0],y2smb[0],y3smb[0])
@@ -166,3 +168,5 @@ xs16 = (x1smb[15],x2smb[15],x3smb[15])
 print("Reading for Channel 16"),xs16
 ys16 = (y1smb[15],y2smb[15],y3smb[15])
 print("Meter for Channel 16"),ys16
+
+#Regression
