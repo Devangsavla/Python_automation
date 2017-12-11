@@ -1,9 +1,6 @@
 import minimalmodbus
 import serial
 import time
-import numpy as np
-import statistics
-import nidaqmx
 
 #Define Communication parameters
 minimalmodbus.BAUDRATE= 9600
@@ -14,42 +11,22 @@ minimalmodbus.TIMEOUT = 1
 #not closing port after each call causes buffer overflow issue(Probably?)
 minimalmodbus.CLOSE_PORT_AFTER_EACH_CALL = True
 
-def slave_id(a):
- x = input('Enter Slave ID of board %d: ' %a)
- if x not in range(1,20):
-  print("Invalid Input. Try again: ")
-  slave_id(a)
- return x
+smb = minimalmodbus.Instrument('COM15',5,mode='rtu')
+smb.debug= True
 
-def regression(x_s,y_s):
- # mean of all elements
- x_mean= 0.1*statistics.mean(x_s)
- y_mean= 0.1*statistics.mean(y_s)
-
- # square every element
- x2=0.1*0.1*x_s*x_s
- x2_mean = statistics.mean(x2)
-
- # element wise multiplication of 2 list
- xy=0.1*0.1*x_s*y_s
- xy_mean = statistics.mean(xy)
-
- # regression calculation
- m = ((x_mean * y_mean) - xy_mean)/((x_mean*x_mean) - x2_mean)
- m=round(m,4)
- c = 10*round(y_mean - (x_mean*m))
- return m,c
-
- 
-b=slave_id(1)
-print ("Board IDs: "),b
-time.sleep(1)
-
-
-smb = minimalmodbus.Instrument('COM15',b,mode='rtu')
-smb.debug= False
-meter = minimalmodbus.Instrument('COM16',3,mode='rtu')
-meter.debug= False
+for i in range(1,17):
+ smb.write_register(i, 1000, 0)
+ print("Write to %d done"%i)
+ time.sleep(0.2)
+for i in range(17,33):
+ smb.write_register(i, 400, 0)
+  print("Write to %d done"%i)
+ time.sleep(0.2)
+smb.write_register(33, 1000, 0)
+time.sleep(0.2)
+smb.write_register(34, 400, 0)
+time.sleep(0.2) 
+print("writing done")
 
 x = np.zeros((2,3,8))
 y = np.zeros((2,3,8))
@@ -99,11 +76,3 @@ for i in range(0,8):
  chy[i+8] = y[1][0][i] , y[1][1][i] , y[1][2][i]
  print(" Chy %d"%(i+9)),chy[i]
 print("Input Done!")
-
-#Regression
-for i in range(0,16):
- m[i],c[i] = regression(chx[i],chy[i])
-print("Regression Done!")
-m = 1000*m
-print("m"),m
-print("c"),c
