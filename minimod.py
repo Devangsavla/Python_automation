@@ -1,29 +1,18 @@
-import minimalmodbus
 import serial
-from time import sleep
+import time
+import nidaqmx
+import nidaqmx.system
 
-minimalmodbus.BAUDRATE= 9600
-minimalmodbus.BYTESIZE = 8
-minimalmodbus.PARITY= 'N'
-minimalmodbus.STOPBITS = 1
-minimalmodbus.TIMEOUT = 1
+system = nidaqmx.system.System.local()
+system.driver_version
+DriverVersion(major_version=16L, minor_version=0L, update_version=0L)
+for device in system.devices:
+ print(device)
 
-instrument = minimalmodbus.Instrument('COM15',5,mode='rtu')
-# instrument.debug= True
-abc  =  instrument.read_registers(3,16,3)
-print (abc[0])
-print (abc[1])
-print (abc[2])
-print (abc[3])
-print (abc[4])
-print (abc[5])
-print (abc[6])
-print (abc[7])
-print (abc[8])
-print (abc[9])
-print (abc[10])
-print (abc[11])
-print (abc[12])
-print (abc[13])
-print (abc[14])
-print (abc[15])
+for i in range(0,8):
+ ch = 'Dev1/ai' + str(i)
+ print ch
+ with nidaqmx.Task() as task:
+  task.ai_channels.add_ai_voltage_chan(ch)
+  ref = task.read()
+  print("Channel%d: "%i),ref
