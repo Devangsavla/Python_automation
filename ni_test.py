@@ -6,32 +6,14 @@ import numpy as np
 
 def nidata():
  for i in range(0,8):
-  ch = 'Dev1/ai' + str(i)
+  ch = 'Dev1/ai' + i
   with nidaqmx.Task() as task:
    # task.ai_channels.add_ai_voltage_chan(ch)
-   task.ai_channels.add_ai_voltage_chan(ch, max_val=0.04, min_val=0.002)
+   task.ai_channels.add_ai_voltage_chan(ch, max_val=0.1, min_val=-0.1)
    time.sleep(1)
    y = task.read(number_of_samples_per_channel=8)
  return(y)
 
-while(1):
-#function to read 8 channel voltage from NI card
- for i in range(0,8):
-  ch = 'Dev1/ai' + str(i)
-  with nidaqmx.Task() as task:
-   task.ai_channels.add_ai_voltage_chan(ch, max_val=0.03, min_val=0)
-   y[i] = (1000000*task.read())
-   time.sleep(0.2)
-   y[i] = y[i] + (1000000*task.read())
-   time.sleep(0.2)
-   y[i] = y[i] + (1000000*task.read())
-   time.sleep(0.2)
-   y[i] = y[i] + (1000000*task.read())
-   time.sleep(0.2)
-   y[i] = y[i] + (1000000*task.read())
-   y[i] = round(y[i]/5)+100
- print(y)
- 
 while(1):
  # y = np.zeros(2)
  y = nidata()

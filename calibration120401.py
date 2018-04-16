@@ -25,14 +25,6 @@ minimalmodbus.CLOSE_PORT_AFTER_EACH_CALL = True
 	# )
 # init1='\x51\x4D\x0D'
 
-#function to check if slave ID entered is valid or not
-def slave_id(a):
- id = input('Enter Slave ID: ')
- if id not in range(1,1000):
-  print("Invalid Input. Try again: ")
-  slave_id(a)
- return id
- 
 #function whose input is x & y lists and output is m & c lists
 def regression(x_s,y_s):
  # mean of all elements
@@ -52,7 +44,7 @@ def regression(x_s,y_s):
  # not multiplying 10 back as it gets canceled in Nr and Dr
  m = ((x_mean * y_mean) - xy_mean)/((x_mean*x_mean) - x2_mean)
  m=round(m,4)
- # multiplying back by 10
+ # multiplying back by 10 
  c = 10*(y_mean - (x_mean*m))
  c = round(c)
  # c = c-20
@@ -66,39 +58,36 @@ def nidata():
    task.ai_channels.add_ai_voltage_chan(ch, max_val=0.04, min_val=0)
    time.sleep(0.1)
    ym[i] = 100000*task.read()
+   time.sleep(0.1)
    ym[i] = ym[i]+ 100000*task.read()
+   time.sleep(0.1)
    ym[i] = ym[i]+ 100000*task.read()
+   time.sleep(0.1)
    ym[i] = ym[i]+ 100000*task.read()
+   time.sleep(0.1)
    ym[i] = ym[i]+ 100000*task.read()
+   time.sleep(0.1)
    ym[i] = ym[i]+ 100000*task.read()
+   time.sleep(0.1)
    ym[i] = ym[i]+ 100000*task.read()
+   time.sleep(0.1)
    ym[i] = ym[i]+ 100000*task.read()
+   time.sleep(0.1)
    ym[i] = ym[i]+ 100000*task.read()
+   time.sleep(0.1)
    ym[i] = ym[i]+ 100000*task.read()
    ym[i] = ym[i]+ 50
    ym[i] = round(ym[i])
-   time.sleep(0.5)
  return(ym)
-
-# def vread():
- # ser1.write(init1)
- # time.sleep(1)
- # while ser1.inWaiting():
-  # time.sleep(1)
-  # read_data1 = ser1.readline()
-  # list1 = read_data1.split('\x2C')
-  # list4 = list1[0].split('\r')
-  # return list4[1]
  
 # Input Slave ID in normal decimal
-sn = raw_input("Enter Daughter Board Serial Number: ")
-b=slave_id(1)
-print("Daughter Board Serial Number: "),sn
-print("Slave ID: "),b
+db = input('Enter Daughter Board Number: ')
+mb = input('Enter Mother Board Number: ')
+b  = input('Enter Slave ID: ')
 time.sleep(1)
 
 #Define PCB Com port
-smb = minimalmodbus.Instrument('COM15',b,mode='rtu')
+smb = minimalmodbus.Instrument('COM3',b,mode='rtu')
 smb.debug= False
 
 # create 3D list for 2 settings 5 current and 8 channels
@@ -114,12 +103,7 @@ c = np.zeros(16)
 ym = np.zeros(8)
 vx = np.zeros(3)
 vy = np.zeros(3)
-vx1=0
-vy1=0
-vx2=0
-vy2=0
-vx3=0
-vy3=0
+d = np.zeros(16)
 
 # Read all raw data of all 16 channels at 3 different current settings
 #3A
@@ -128,9 +112,15 @@ while(chk=='n'):
  raw_input("Keep setting A and current 3A and PRESS ENTER")
  print("Wait for Reading...")
  time.sleep(15)
- x[0][0] = smb.read_registers(1,8,4)
+ try:
+  x[0][0] = smb.read_registers(1,8,4)
+ except IOError:
+  print("Problem with ZigBee")
  print(x[0][0])
- y[0][0]=nidata()
+ try:
+  y[0][0]=nidata()
+ except IOError:
+  print("Problem with NI Card")
  print(y[0][0])
  for i in range (0,8):
   diff[i] = x[0][0][i] - y[0][0][i]
@@ -145,9 +135,15 @@ while(chk=='n'):
  raw_input("Keep setting B and current 3A and PRESS ENTER")
  print("Wait for Reading...")
  time.sleep(15)
- x[1][0]= smb.read_registers(9,8,4)
+ try:
+  x[1][0]= smb.read_registers(9,8,4)
+ except IOError:
+  print("Problem with ZigBee")
  print(x[1][0])
- y[1][0]=nidata()
+ try:
+  y[1][0]=nidata()
+ except IOError:
+  print("Problem with NI Card")
  print(y[1][0])
  for i in range (0,8):
   diff[i] = x[1][0][i] - y[1][0][i]
@@ -162,9 +158,15 @@ while(chk=='n'):
  raw_input("Keep setting B and current 5A and PRESS ENTER")
  print("Wait for Reading...")
  time.sleep(15)
- x[1][1]= smb.read_registers(9,8,4)
+ try:
+  x[1][1]= smb.read_registers(9,8,4)
+ except IOError:
+  print("Problem with ZigBee")
  print(x[1][1])
- y[1][1]=nidata()
+ try:
+  y[1][1]=nidata()
+ except IOError:
+  print("Problem with NI Card")
  print(y[1][1])
  for i in range (0,8):
   diff[i] = x[1][1][i] - y[1][1][i]
@@ -179,9 +181,15 @@ while(chk=='n'):
  raw_input("Keep setting A and current 5A and PRESS ENTER")
  print("Wait for Reading...")
  time.sleep(15)
- x[0][1]= smb.read_registers(1,8,4)
+ try:
+  x[0][1]= smb.read_registers(1,8,4)
+ except IOError:
+  print("Problem with ZigBee")
  print(x[0][1])
- y[0][1]=nidata()
+ try:
+  y[0][1]=nidata()
+ except IOError:
+  print("Problem with NI Card")
  print(y[0][1])
  for i in range (0,8):
   diff[i] = x[0][1][i] - y[0][1][i]
@@ -196,9 +204,15 @@ while(chk=='n'):
  raw_input("Keep setting A and current 10A and PRESS ENTER")
  print("Wait for Reading...")
  time.sleep(15)
- x[0][2]= smb.read_registers(1,8,4)
+ try:
+  x[0][2]= smb.read_registers(1,8,4)
+ except IOError:
+  print("Problem with ZigBee")
  print(x[0][2])
- y[0][2]=nidata()
+ try:
+  y[0][2]=nidata()
+ except IOError:
+  print("Problem with NI Card")
  print(y[0][2])
  for i in range (0,8):
   diff[i] = x[0][2][i] - y[0][2][i]
@@ -213,9 +227,15 @@ while(chk=='n'):
  raw_input("Keep setting B and current 10A and PRESS ENTER")
  print("Wait for Reading...")
  time.sleep(15)
- x[1][2]= smb.read_registers(9,8,4)
+ try:
+  x[1][2]= smb.read_registers(9,8,4)
+ except IOError:
+  print("Problem with ZigBee")
  print(x[1][2])
- y[1][2]=nidata()
+ try:
+  y[1][2]=nidata()
+ except IOError:
+  print("Problem with NI Card")
  print(y[1][2])
  for i in range (0,8):
   diff[i] = x[1][2][i] - y[1][2][i]
@@ -230,9 +250,15 @@ while(chk=='n'):
  raw_input("Keep setting B and current 15A and PRESS ENTER")
  print("Wait for Reading...")
  time.sleep(15)
- x[1][3]= smb.read_registers(9,8,4)
+ try:
+  x[1][3]= smb.read_registers(9,8,4)
+ except IOError:
+  print("Problem with ZigBee")
  print(x[1][3])
- y[1][3]=nidata()
+ try:
+  y[1][3]=nidata()
+ except IOError:
+  print("Problem with NI Card")
  print(y[1][3])
  for i in range (0,8):
   diff[i] = x[1][3][i] - y[1][3][i]
@@ -247,9 +273,15 @@ while(chk=='n'):
  raw_input("Keep setting A and current 15A and PRESS ENTER")
  print("Wait for Reading...")
  time.sleep(15)
- x[0][3]= smb.read_registers(1,8,4)
+ try:
+  x[0][3]= smb.read_registers(1,8,4)
+ except IOError:
+  print("Problem with ZigBee")
  print(x[0][3])
- y[0][3]=nidata()
+ try:
+  y[0][3]=nidata()
+ except IOError:
+  print("Problem with NI Card")
  print(y[0][3])
  for i in range (0,8):
   diff[i] = x[0][3][i] - y[0][3][i]
@@ -264,9 +296,15 @@ while(chk=='n'):
  raw_input("Keep setting A and current 20A and PRESS ENTER")
  print("Wait for Reading...")
  time.sleep(15)
- x[0][4]= smb.read_registers(1,8,4)
+ try:
+  x[0][4]= smb.read_registers(1,8,4)
+ except IOError:
+  print("Problem with ZigBee")
  print(x[0][4])
- y[0][4]=nidata()
+ try:
+  y[0][4]=nidata()
+ except IOError:
+  print("Problem with NI Card")
  print(y[0][4])
  for i in range (0,8):
   diff[i] = x[0][4][i] - y[0][4][i]
@@ -281,9 +319,15 @@ while(chk=='n'):
  raw_input("Keep setting B and current 20A and PRESS ENTER")
  print("Wait for Reading...")
  time.sleep(15)
- x[1][4]= smb.read_registers(9,8,4)
+ try:
+  x[1][4]= smb.read_registers(9,8,4)
+ except IOError:
+  print("Problem with ZigBee")
  print(x[1][4])
- y[1][4]=nidata()
+ try:
+  y[1][4]=nidata()
+ except IOError:
+  print("Problem with NI Card")
  print(y[1][4])
  for i in range (0,8):
   diff[i] = x[1][4][i] - y[1][4][i]
@@ -308,70 +352,121 @@ print("Input Done!")
 #Regression
 for i in range(0,16):
  m[i],c[i] = regression(chx[i],chy[i])
-print("Regression Done!")
+print("Current Done!")
 m = 10000*m
 print("m"),m
 print("c"),c
 
-# raw_input("If constants are fine press PRESS ENTER")
+raw_input("Set Voltage to 500V and PRESS ENTER")
+vy[0] = input("Enter voltage source value and press ENTER: ")
+print("Multimeter voltage 1: "),vy[0]
+vx[0] = input("Enter PCB reading and press ENTER: ")
+print("PCB voltage 1: "),vx[0]
 
-# raw_input("Set Voltage to 300V and PRESS ENTER")
-# vx1= smb.read_registers(25,1,4)
-# print("PCB voltage 1: "),vx1
-# vy1 = raw_input("Enter Fluke voltage value and press ENTER: ")
-# print("Multimeter voltage 1: "),vy1
 
-# raw_input("Set Voltage to 500V and PRESS ENTER")
-# vx2= smb.read_registers(25,1,4)
-# print("PCB voltage 2: "),vx2
-# vy2 = raw_input("Enter Fluke voltage value and press ENTER: ")
-# print("Multimeter voltage 2: "),vy2
+raw_input("Set Voltage to 1000V and PRESS ENTER")
+vy[1] = raw_input("Enter Fluke voltage value and press ENTER: ")
+print("Multimeter voltage 2: "),vy[1]
+vx[1] = raw_input("Enter PCB reading and press ENTER: ")
+print("PCB voltage 2: "),vx[1]
 
-# raw_input("Set Voltage to 900V and PRESS ENTER")
-# vx3= smb.read_registers(25,1,4)
-# print("PCB voltage 3: "),vx3
-# vy3 = raw_input("Enter Fluke voltage value and press ENTER: ")
-# print("Multimeter voltage 3: "),vy3
+raw_input("Set Voltage to 1500V and PRESS ENTER")
+vy[2] = raw_input("Enter Fluke voltage value and press ENTER: ")
+print("Multimeter voltage 3: "),vy[2]
+vx[2] = raw_input("Enter PCB reading and press ENTER: ")
+print("PCB voltage 3: "),vx[2]
 
-vm=9016
-vc=3
-# vm = raw_input("Enter Voltage M: ")
-# print("voltage m: "),vm
-# vc = raw_input("Enter Voltage C: ")
-# print("voltage c: "),vc
+vm,vc = regression(vx,vy)
+vm = int(vm*10000)
+vc = int(vc)
+print("Raw Vc: "),vc
+if vc < 0:
+ vc = 0
+# vm=9140
+# vc=2
+
+
+print("VM: "),int(vm)
+print("VC: "),int(vc)
 
 raw_input("All OK to write then PRESS ENTER")
 smb.write_registers(0,[int(m[0]),int(m[1]),int(m[2]),int(m[3]),int(m[4]),int(m[5]),int(m[6]),int(m[7]),int(m[8]),int(m[9]),int(m[10]),int(m[11]),int(m[12]),int(m[13]),int(m[14]),int(m[15]),abs(int(c[0])),abs(int(c[1])),abs(int(c[2])),abs(int(c[3])),abs(int(c[4])),abs(int(c[5])),abs(int(c[6])),abs(int(c[7])),abs(int(c[8])),abs(int(c[9])),abs(int(c[10])),abs(int(c[11])),abs(int(c[12])),abs(int(c[13])),abs(int(c[14])),abs(int(c[15])),int(vm),int(vc)])
+time.sleep(2)
 
-# vx[0]=vx1
-# vy[0]=vy1
-# vx[1]=vx2
-# vy[1]=vy2
-# vx[2]=vx3
-# vy[2]=vy3
+# print("Daughter Board Serial Number: "),db
+# print("Mother Board Serial Number: "),mb
+# print("Slave ID: "),b
 
-# print("PCB voltage: ",vx)
-# print("Multimeter voltage: ",vy)
+# raw_input("PRESS ENTER to read >")
+# time.sleep(1)
 
-# vm,vc = regression(vx,vy)
-# print("Voltage m: "),vm
-# print("Voltage c: "),vc
+# m = smb.read_registers(0,16,3)
+# print("M: "),m
+# c = smb.read_registers(16,16,3)
+# print("C: "),c
 
-# target = open("log_calib.csv","a")
+# raw_input("Keep Setting A and current 3A and PRESS ENTER")
+# time.sleep(15)
+# for i in range(0,8):
+ # y = input("Enter multimeter value for Channel %d : "%(i+1))
+ # print(y)
+ # x = smb.read_register((i+1),1,4)
+ # x = int(x*10)
+ # print(x)
+ # d = y-x
+ # d = 10*round((d)/10)
+ # c[i] = int(c[i]-d)
 
-# target.write("Serial number")
-# target.write(",")
-# target.write(str(sn))
+# raw_input("Keep Setting B and current 3A and PRESS ENTER")
+# time.sleep(15)
+# for i in range(0,8):
+ # y = input("Enter multimeter value for Channel %d : "%(i+9))
+ # print(y)
+ # x = smb.read_register((i+9),1,4)
+ # x = int(x*10)
+ # print(x)
+ # d = y-x
+ # d = 10*round((d)/10)
+ # c[i+8] = int(c[i+8]-d)
+
+# # print("Difference list: "),d
+# print("C after difference: "),c
+
+# vm=smb.read_registers(32,1,3)
+# vc=smb.read_registers(33,1,3)
+
+# print("VM: "),int(vm)
+# print("VC: "),int(vc)
+
+# raw_input("All OK to write then PRESS ENTER")
+# smb.write_registers(0,[m[0],m[1],m[2],m[3],m[4],m[5],m[6],m[7],m[8],m[9],m[10],m[11],m[12],m[13],m[14],m[15],c[0],c[1],c[2],c[3],c[4],c[5],c[6],c[7],c[8],c[9],c[10],c[11],c[12],c[13],c[14],c[15],vm,vc])
+
+# c = smb.read_registers(16,16,3)
+# print("Modified C: "),c
+
+# raw_input("Change Complete. Press Enter to record in Excel")
+# time.sleep(1)
+
 # target.write('\n')
-
+# target.write("Daughter Board ID")
+# target.write(",")
+# target.write("Mother Board ID")
+# target.write(",")
 # target.write("Slave ID")
-# target.write(",")
-# target.write(str(b))
 # target.write('\n')
 
+# target.write(str(db))
+# target.write(",")
+# target.write(str(mb))
+# target.write(",")
+# target.write(str(s))
+# target.write('\n')
+
+# target.write("Channel Number")
+# target.write(",")
 # target.write(str(1))
 # target.write(",")
-# target.write(str(2)x`)
+# target.write(str(2))
 # target.write(",")
 # target.write(str(3))
 # target.write(",")
@@ -402,6 +497,8 @@ smb.write_registers(0,[int(m[0]),int(m[1]),int(m[2]),int(m[3]),int(m[4]),int(m[5
 # target.write(str(16))
 # target.write('\n')
 
+# target.write("M")
+# target.write(",")
 # target.write(str(m[0]))
 # target.write(",")
 # target.write(str(m[1]))
@@ -435,6 +532,8 @@ smb.write_registers(0,[int(m[0]),int(m[1]),int(m[2]),int(m[3]),int(m[4]),int(m[5
 # target.write(str(m[15]))
 # target.write('\n')
 
+# target.write("C")
+# target.write(",")
 # target.write(str(c[0]))
 # target.write(",")
 # target.write(str(c[1]))
@@ -466,18 +565,16 @@ smb.write_registers(0,[int(m[0]),int(m[1]),int(m[2]),int(m[3]),int(m[4]),int(m[5
 # target.write(str(c[14]))
 # target.write(",")
 # target.write(str(c[15]))
-# target.write(",")
-# target.write(str(c[16]))
 # target.write('\n')
 
-# target.write("Voltage M")
+# target.write("VM")
 # target.write(",")
 # target.write(str(vm))
 # target.write('\n')
-# target.write("Voltage C")
+
+# target.write("VC")
 # target.write(",")
 # target.write(str(vc))
 # target.write('\n')
 
 # target.write('\n')
-# target.close()

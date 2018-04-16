@@ -3,7 +3,6 @@ import serial
 import time
 import numpy as np
 import statistics
-import nidaqmx
 
 #Define Communication parameters
 minimalmodbus.BAUDRATE= 9600
@@ -25,63 +24,44 @@ target = open("log_calib.csv","a")
 
 m = np.zeros(16)
 c = np.zeros(16)
+x = np.zeros(16)
+y = np.zeros(16)
 d = np.zeros(16)
 
-raw_input("PRESS ENTER to read Slope M: ")
-time.sleep(2)
+raw_input("PRESS ENTER to read >")
+time.sleep(1)
+
 m = smb.read_registers(0,16,3)
 print("M: "),m
 
-raw_input("PRESS ENTER to read Constant C: ")
-time.sleep(2)
 c = smb.read_registers(16,16,3)
 print("C: "),c
 
-print("new = old - difference")
+for i in range(0,8):
+ raw_input("Keep Setting A and current 3A and PRESS ENTER")
+ time.sleep(10)
+ 
+ y[i] = raw_input("Enter multimeter value for Channel %d : "%(i+1))
+ x[i] = smb.read_registers((i+1),1,4)
+ d[i] = 10*round((y[i]-x[i])/10)
+ c[i] = int(c[i]-d[i])
 
-d[0]= raw_input("Difference channel 1 :")
-d[1]= raw_input("Difference channel 2 :")
-d[2]= raw_input("Difference channel 3 :")
-d[3]= raw_input("Difference channel 4 :")
-d[4]= raw_input("Difference channel 5 :")
-d[5]= raw_input("Difference channel 6 :")
-d[6]= raw_input("Difference channel a :")
-d[7]= raw_input("Difference channel b :")
-d[8]= raw_input("Difference channel 7 :")
-d[9]= raw_input("Difference channel 8 :")
-d[10]= raw_input("Difference channel 9 :")
-d[11]= raw_input("Difference channel 10 :")
-d[12]= raw_input("Difference channel 11 :")
-d[13]= raw_input("Difference channel 12 :")
-d[14]= raw_input("Difference channel c :")
-d[15]= raw_input("Difference channel d :")
-
-c[0] =  int(c[0] - d[0])       #Channel 1
-c[1] =  int(c[1] - d[1])       #Channel 2
-c[2] =  int(c[2] - d[2])       #Channel 3
-c[3] =  int(c[3] - d[3])       #Channel 4
-c[4] =  int(c[4] - d[4])       #Channel 5
-c[5] =  int(c[5] - d[5])       #Channel 6  
-c[6] =  int(c[6] - d[6])       #Channel a 
-c[7] =  int(c[7] - d[7])       #Channel b
-c[8] =  int(c[8] - d[8])       #Channel 7
-c[9] =  int(c[9] - d[9])       #Channel 8
-c[10] = int(c[10]- d[10])      #Channel 9
-c[11] = int(c[11]- d[11])      #Channel 10
-c[12] = int(c[12]- d[12])      #Channel 11
-c[13] = int(c[13]- d[13])      #Channel 12
-c[14] = int(c[14]- d[14])      #Channel c
-c[15] = int(c[15]- d[15])      #Channel d
+for i in range(8,8):
+ raw_input("Keep Setting B and current 3A and PRESS ENTER")
+ time.sleep(10)
+ 
+ y[i] = raw_input("Enter multimeter value for Channel %d : "%(i+1))
+ x[i] = smb.read_registers((i+1),1,4)
+ d[i] = 10*round((y[i]-x[i])/10)
+ c[i] = int(c[i]-d[i])
 
 print("Modified C: "),c
 
-vm=9140
-vc=2
-
-raw_input("If all constants are OK, Change program and PRESS ENTER.")
+vm=smb.read_registers(32,1,4)
+vc=smb.read_registers(33,1,4)
 
 raw_input("All OK to write then PRESS ENTER")
-smb.write_registers(0,[m[0],m[1],m[2],m[3],m[4],m[5],m[6],m[7],m[8],m[9],m[10],m[11],m[12],m[13],m[14],m[15],c[0],c[1],c[2],c[3],c[4],c[5],c[6],c[7],c[8],c[9],c[10],c[11],c[12],c[13],c[14],c[15],vm,vc])
+smb.write_registers(0,[m[0],m[1],m[2],m[3],m[4],m[5],m[6],m[7],m[8],m[9],m[10],m[11],m[12],m[13],m[14],m[15],c[0],c[1],c[2],c[3],c[4],c[5],c[6],c[7],c[8],c[9],c[10],c[11],c[12],c[13],c[14],c[15]])
 
 raw_input("Change Complete. Press Enter to record in Excel")
 time.sleep(1)

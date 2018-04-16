@@ -75,8 +75,8 @@ c[15] = int(c[15]- d[15])      #Channel d
 
 print("Modified C: "),c
 
-vm=9016
-vc=3
+vm=9140
+vc=2
 
 raw_input("If all constants are OK, Change program and PRESS ENTER.")
 
